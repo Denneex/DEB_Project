@@ -1,0 +1,71 @@
+## COMPONENT | Triggerer
+###################################
+triggerer:
+ ## if the airflow triggerer should be deployed
+ ## - [WARNING] the triggerer component was added in airflow 2.2.0
+ ## - [WARNING] if `airflow.legacyCommands` is `true` the triggerer will NOT be deployed
+ ##
+ enabled: false
+
+###################################
+## COMPONENT | Flower
+###################################
+flower:
+ ## if the airflow flower UI should be deployed
+ ##
+ enabled: false
+
+###################################
+## CONFIG | Airflow Logs
+###################################
+logs:
+ ## the airflow logs folder
+ ##
+ path: /usr/local/airflow/logs
+ ## configs for the logs PVC
+ ##
+ persistence:
+  ## if a persistent volume is mounted at `logs.path`
+  ##
+  enabled: false
+
+###################################
+## CONFIG | Airflow DAGs
+###################################
+dags:
+ ## the airflow dags folder
+ ##
+ path: /usr/local/airflow/dags
+ ## configs for the git-sync sidecar (https://github.com/kubernetes/git-sync)
+ ##
+ gitSync:
+  ## if the git-sync sidecar container is enabled
+  ##
+  enabled: true
+  ## the url of the git repo
+  ##
+  ## ____ EXAMPLE _______________
+  ##  # https git repo
+  ##  repo: “https://github.com/USERNAME/REPOSITORY.git”
+  ##
+  ## ____ EXAMPLE _______________
+  ##  # ssh git repo
+  ##  repo: “git@github.com:USERNAME/REPOSITORY.git”
+  ##
+  repo: https://github.com/Denneex/DEB_Project.git
+  ## the sub-path within your repo where dags are located
+  ## - only dags under this path within your repo will be seen by airflow,
+  ##  (note, the full repo will still be cloned)
+  ##
+  repoSubPath: dag
+  ## the git branch to check out
+  ##
+  branch: main
+
+###################################
+## DATABASE | PgBouncer
+###################################
+pgbouncer:
+ ## if the pgbouncer Deployment is created
+ ##
+ enabled: false
