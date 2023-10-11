@@ -42,9 +42,9 @@ with DAG('load_dw', default_args=default_args, schedule_interval='@daily') as da
             {'name': 'device', 'type': 'STRING', 'mode': 'NULLABLE'},
             {'name': 'os', 'type': 'STRING', 'mode': 'NULLABLE'},
             {'name': 'location', 'type': 'STRING', 'mode': 'NULLABLE'},
-            {'name': browser, type: STRING, mode: NULLABLE},
-            {'name': ip, type: STRING, mode: NULLABLE},
-            {'name': phone_number, type: STRING, mode: NULLABLE}
+            {'name': 'browser', type: 'STRING', 'mode': 'NULLABLE'},
+            {'name': 'ip', type: 'STRING', 'mode': 'NULLABLE'},
+            {'name': 'phone_number', type: 'STRING', 'mode': 'NULLABLE'}
         ],
         write_disposition='WRITE_TRUNCATE',
         create_disposition='CREATE_IF_NEEDED'
