@@ -1,6 +1,6 @@
 project_id = "lexical-drake-399716"
-region   = "us-east1"
-location = "us-east1-b"
+region   = "us-central1"
+location = "us-central1-c"
 
 
 #GKE
@@ -8,7 +8,7 @@ gke_num_nodes = 2
 machine_type  = "n1-standard-2"
 
 #CloudSQL
-instance_name     = "instance_name"
+instance_name     = "deb-postgre-db"
 database_version  = "POSTGRES_15"
 instance_tier     = "db-f1-micro"
 disk_space        = 10

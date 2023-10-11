@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"cloudsql","Source":"./modules/cloudsql","Dir":"modules/cloudsql"},{"Key":"gke","Source":"./modules/gke","Dir":"modules/gke"},{"Key":"vpc","Source":"./modules/vpc","Dir":"modules/vpc"}]}

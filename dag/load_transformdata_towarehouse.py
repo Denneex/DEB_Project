@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 # Define the default arguments for the DAG
 default_args = {
     'owner': 'airflow',
-    'start_date': datetime(2023, 10, 10),
+    'start_date': datetime(2023, 10, 11),
     'retries': 1,
     'retry_delay': timedelta(minutes=5)
 }
@@ -18,7 +18,7 @@ with DAG('load_dw', default_args=default_args, schedule_interval='@daily') as da
     # task to load movie_review.csv file from cloud bucket to BigQuery table
     load_movie_review_task = GCSToBigQueryOperator(
         task_id='load_movie_review_task',
-        bucket='bucket_name',
+        bucket='deb-bucket',
         source_objects=['movie_review.csv'],
         destination_project_dataset_table='dataset_id.movie_review',
         schema_fields=[
@@ -33,7 +33,7 @@ with DAG('load_dw', default_args=default_args, schedule_interval='@daily') as da
     # task to load log_reviews.csv file from cloud bucket to BigQuery table
     load_log_reviews_task = GCSToBigQueryOperator(
         task_id='load_log_reviews_task',
-        bucket='bucket_name',
+        bucket='deb-bucket',
         source_objects=['log_reviews.csv'],
         destination_project_dataset_table='dataset_id.log_reviews',
         schema_fields=[

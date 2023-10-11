@@ -20,7 +20,7 @@ with DAG('upload_csv_files', default_args=default_args, schedule_interval='@dail
     # task to create PostgreSQL DB and table using schema
     create_db_task = PostgresOperator(
         task_id='create_db_task',
-        postgres_conn_id='postgres_default',
+        postgres_conn_id='postgres_conn',
         sql='''
         CREATE SCHEMA IF NOT EXISTS schema_name;
         CREATE TABLE IF NOT EXISTS schema_name.user_purchase (
@@ -39,7 +39,7 @@ with DAG('upload_csv_files', default_args=default_args, schedule_interval='@dail
     # task to load user_purchase.csv file into PostgreSQL DB
     load_db_task = PostgresOperator(
         task_id='load_db_task',
-        postgres_conn_id='postgres_default',
+        postgres_conn_id='postgres_conn',
         sql='''
         COPY schema_name.user_purchase FROM '/path/to/user_purchase.csv' DELIMITER ',' CSV HEADER;
         '''
@@ -48,7 +48,7 @@ with DAG('upload_csv_files', default_args=default_args, schedule_interval='@dail
     # task to download movie_review.csv and log_reviews.csv files from cloud bucket to local filesystem
     download_files_task = GCSToLocalFilesystemOperator(
         task_id='download_files_task',
-        bucket='bucket_name',
+        bucket='deb-bucket',
         object_name='movie_review.csv,log_reviews.csv',
         filename='/path/to/local/filesystem'
     )
