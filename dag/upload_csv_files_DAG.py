@@ -5,6 +5,7 @@ from airflow.providers.google.cloud.transfers.gcs_to_local import GCSToLocalFile
 from pyspark.sql import SparkSession
 from pyspark.ml.feature import Tokenizer, StopWordsRemover
 import xml.etree.ElementTree as ET # use the built-in xml library instead of databricks.spark.xml
+from datetime import datetime
 
 # Define the default arguments for the DAG
 default_args = {
