@@ -28,7 +28,7 @@ GCS_BUCKET_NAME = "africa-deb-bucket-second"
 GCS_KEY_NAME = "chart-data.csv"
 
 # Postgres constants
-POSTGRES_CONN_ID = "google-demo-session-6-conn"
+POSTGRES_CONN_ID = "postgres_conn"
 POSTGRES_TABLE_NAME = "chart_data"
 
 
@@ -37,7 +37,7 @@ def ingest_data_from_gcs(
     gcs_object: str,
     postgres_table: str,
     gcp_conn_id: str = "google_cloud_default",
-    postgres_conn_id: str = "google-demo-session-6-conn",
+    postgres_conn_id: str = "postgres_conn",
 ):
     """Ingest data from an GCS location into a postgres table.
 
@@ -79,18 +79,18 @@ with DAG(
         task_id="create_table_entity",
         postgres_conn_id=POSTGRES_CONN_ID,
         sql=f"""
-            CREATE TABLE IF NOT EXISTS {POSTGRES_TABLE_NAME} (
-                month VARCHAR(10),
-                position INTEGER,
-                artist VARCHAR(100),
-                song VARCHAR(100),
-                indicative_revenue NUMERIC,
-                us INTEGER,
-                uk INTEGER,
-                de INTEGER,
-                fr INTEGER,
-                ca INTEGER,
-                au INTEGER
+            CREATE SCHEMA IF NOT EXISTS deb_schema;
+            CREATE TABLE IF NOT EXISTS deb_schema.user_purchase (
+            invoice_number varchar(10),
+            stock_code varchar(20),
+            detail varchar(1000),
+            quantity int,
+            invoice_date timestamp,
+            unit_price numeric(8,3),
+            customer_id int,
+            country varchar(20)
+            
+            
             )
         """,
     )

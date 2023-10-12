@@ -50,6 +50,32 @@ with DAG('load_dw', default_args=default_args, schedule_interval='@daily') as da
         create_disposition='CREATE_IF_NEEDED'
     )
 
+    # Define a custom function to load user_purchase.csv file from PostgreSQL DB to BigQuery table
+    def load_user_purchase():
+        # Import the required modules
+        import pandas as pd
+        from google.cloud import bigquery
+
+        # Create a PostgresHook object to connect to the PostgreSQL DB
+        pg_hook = PostgresHook(postgres_conn_id='postgres_default')
+
+        # Execute a SQL query to get the data from the user_purchase table
+        sql = "SELECT * FROM user_purchase"
+        df = pg_hook.get_pandas_df(sql)
+
+        # Create a BigQuery client object to connect to the BigQuery service
+        bq_client = bigquery.Client()
+
+        # Specify the destination table in BigQuery
+        table_id = "dataset_id.user_purchase"
+
+        # Load the dataframe to the BigQuery table
+        job = bq_client.load_table_from_dataframe(df, table_id)
+
+        # Wait for the job to complete and print the result
+        job.result()
+        print(f"Loaded {job.output_rows} rows to {table_id}")
+
     # task to load user_purchase.csv file from PostgreSQL DB to BigQuery table
     load_user_purchase_task = PythonOperator(
         task_id='load_user_purchase_task',
@@ -58,4 +84,3 @@ with DAG('load_dw', default_args=default_args, schedule_interval='@daily') as da
 
     # The dependencies between the tasks
     [load_movie_review_task, load_log_reviews_task, load_user_purchase_task]
-

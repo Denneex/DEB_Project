@@ -20,7 +20,7 @@ import requests
 import tempfile
 
 # constants
-bucket = 'africa-deb-bucket-second'
+bucket = 'deb_bucket'
 dataset_url_1 = (
     "https://data.montgomerycountymd.gov/resource/v76h-r7br.csv")
 dataset_file_1= "warehouse_and_details_sales.csv"
