@@ -57,7 +57,7 @@ with DAG('load_dw', default_args=default_args, schedule_interval='@daily') as da
         from google.cloud import bigquery
 
         # Create a PostgresHook object to connect to the PostgreSQL DB
-        pg_hook = PostgresHook(postgres_conn_id='postgres_default')
+        pg_hook = PostgresHook(postgres_conn_id='postgres_conn')
 
         # Execute a SQL query to get the data from the user_purchase table
         sql = "SELECT * FROM user_purchase"

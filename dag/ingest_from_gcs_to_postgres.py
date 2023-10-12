@@ -24,7 +24,7 @@ CLOUD_PROVIDER = "gcp"
 
 # GCP constants
 GCP_CONN_ID = "google_cloud_default"
-GCS_BUCKET_NAME = "africa-deb-bucket-second"
+GCS_BUCKET_NAME = "deb_bucket"
 GCS_KEY_NAME = "chart-data.csv"
 
 # Postgres constants
