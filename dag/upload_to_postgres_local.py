@@ -26,7 +26,7 @@ with DAG(
     # Define the task to upload movies_reviews.csv to gcp bucket
     upload_movies_reviews = LocalFilesystemToGCSOperator(
         task_id='upload_movies_reviews',
-        src='C:\\Users\\shopinverse\\Documents\\DATA-ENGINEERING\\movie_review.csv', 
+        src='https://drive.google.com/file/d/1-YnwFvoHrU5cpprajUtUTygl905TyUeo/view?usp=drive_link', 
         dst='movies_reviews.csv',
         bucket='deb_bucket',
         mime_type='text/csv',
@@ -36,7 +36,7 @@ with DAG(
     # Define the task to upload log_reviews.csv to gcp bucket
     upload_log_reviews = LocalFilesystemToGCSOperator(
         task_id='upload_log_reviews',
-        src='C:\\Users\\shopinverse\\Documents\\DATA-ENGINEERING\\log_reviews - log_reviews.csv', 
+        src='https://docs.google.com/spreadsheets/d/1M85FUm3HDUsPdhQPOy6PsEC4w9Bvhrt7RZayONzxhJo/edit?usp=drive_link', 
         dst='log_reviews.csv',
         bucket='deb_bucket', 
         mime_type='text/csv',
@@ -67,7 +67,7 @@ with DAG(
         task_id='upload_user_purchase',
         postgres_conn_id='postgres_conn', 
         sql="""
-            COPY deb_schema.user_purchase FROM 'C:\\Users\\shopinverse\\Documents\\DATA-ENGINEERING\\user_purchase - user_purchase.csv' DELIMITER ',' CSV HEADER;
+            COPY deb_schema.user_purchase FROM 'https://docs.google.com/spreadsheets/d/1xcuVhBvJd5OY_1cv47SFAXCWfUVyEgCvnMeUL6UJ9-g/edit?usp=drive_link' DELIMITER ',' CSV HEADER;
             """,
     )
 
