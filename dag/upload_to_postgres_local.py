@@ -39,7 +39,7 @@ with DAG(
         src='C:\\Users\\shopinverse\\Documents\\DATA-ENGINEERING\\log_reviews - log_reviews.csv', 
         dst='log_reviews.csv',
         bucket='deb_bucket', 
-        mime_type='text/csv',
+        mime_type='csv',
         gcp_conn_id='google_cloud_default',
     )
 
