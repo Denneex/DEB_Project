@@ -4,7 +4,7 @@ from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.google.cloud.transfers.gcs_to_local import GCSToLocalFilesystemOperator
 from pyspark.sql import SparkSession
 from pyspark.ml.feature import Tokenizer, StopWordsRemover
-import databricks.spark.xml as spark_xml
+import xml.etree.ElementTree as ET # use the built-in xml library instead of databricks.spark.xml
 
 # Define the default arguments for the DAG
 default_args = {
@@ -65,12 +65,41 @@ with DAG('transform_csv_files', default_args=default_args, schedule_interval='@d
         python_callable=transform_movie_review # a custom function to transform movie_review.csv file using pyspark
     )
 
-    # task to transform log_reviews.csv file using pyspark and databricks.spark.xml library
+    # task to transform log_reviews.csv file using pyspark and xml library
     transform_log_reviews_task = PythonOperator(
         task_id='transform_log_reviews_task',
-        python_callable=transform_log_reviews # a custom function to transform log_reviews.csv file using pyspark and databricks.spark.xml library
+        python_callable=transform_log_reviews_without_databricks # a custom function to transform log_reviews.csv file using pyspark and xml library
     )
 
     # The dependencies between the tasks
     transform_movie_review_task >> transform_log_reviews_task
 
+# Define the custom function to transform log_reviews.csv file using pyspark and xml library
+def transform_log_reviews_without_databricks():
+    
+    # Create a spark session
+    spark = SparkSession.builder.appName('transform_log_reviews').getOrCreate()
+
+    # Read the log_reviews.csv file as a spark dataframe
+    df = spark.read.format('csv').option('header', 'true').load('/path/to/log_reviews.csv')
+
+    # Define a user-defined function to parse the xml column and extract the rating value
+    def parse_xml(xml):
+        try:
+            root = ET.fromstring(xml) # parse the xml string as an element tree
+            rating = root.find('rating').text # find the rating element and get its text value
+            return rating
+        except:
+            return None # return None if there is an error in parsing or finding the rating element
+
+    # Register the user-defined function as a spark SQL function with the name 'parse_xml'
+    spark.udf.register('parse_xml', parse_xml)
+
+    # Apply the parse_xml function on the xml column and create a new column called 'rating'
+    df = df.withColumn('rating', parse_xml(df.xml))
+
+    # Drop the xml column as it is no longer needed
+    df = df.drop('xml')
+
+    # Write the transformed dataframe as a parquet file in the local filesystem
+    df.write.format('parquet').mode('overwrite').save('/path/to/transformed_log_reviews.parquet')
