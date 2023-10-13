@@ -75,4 +75,4 @@ with DAG(
     )
 
     # dependencies between the tasks
-    upload_movies_reviews >> upload_log_reviews >> create_schema_table >> upload_user_purchase
+    create_schema_table >> upload_user_purchase>> upload_log_reviews >> upload_movies_reviews
