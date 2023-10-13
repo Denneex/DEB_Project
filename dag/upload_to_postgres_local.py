@@ -30,7 +30,7 @@ with DAG(
         dst='movies_reviews.csv',
         bucket='deb_bucket',
         mime_type='text/csv',
-        gcp_conn_id='google_cloud_default',
+        gcp_conn_id='gcp_conn_id',
     )
 
     # Define the task to upload log_reviews.csv to gcp bucket
@@ -40,13 +40,13 @@ with DAG(
         dst='log_reviews.csv',
         bucket='deb_bucket', 
         mime_type='text/csv',
-        gcp_conn_id='google_cloud_default',
+        gcp_conn_id='gcp_conn_id',
     )
 
     # Define the task to create schema and table in postgres database
     create_schema_table = PostgresOperator(
         task_id='create_schema_table',
-        postgres_conn_id='postgres_conn',
+        postgres_conn_id='postgre_conn',
         sql="""
             CREATE SCHEMA IF NOT EXISTS deb_schema;
             CREATE TABLE IF NOT EXISTS deb_schema.user_purchase (
@@ -65,7 +65,7 @@ with DAG(
     # Define the task to upload user_purchase.csv to postgres database
     upload_user_purchase = PostgresOperator(
         task_id='upload_user_purchase',
-        postgres_conn_id='postgres_conn', 
+        postgres_conn_id='postgre_conn', 
         sql="""
             COPY deb_schema.user_purchase FROM E'C:\\Users\\shopinverse\\Documents\\DATA-ENGINEERING\\user_purchase - user_purchase.csv' DELIMITER ',' CSV HEADER;
             """,
