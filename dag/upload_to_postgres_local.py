@@ -1,4 +1,5 @@
 # Import the required modules
+import os
 from airflow import DAG
 from airflow.providers.google.cloud.transfers.local_to_gcs import LocalFilesystemToGCSOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
@@ -26,7 +27,7 @@ with DAG(
     # Define the task to upload movies_reviews.csv to gcp bucket
     upload_movies_reviews = LocalFilesystemToGCSOperator(
         task_id='upload_movies_reviews',
-        src=r'C:\Users\shopinverse\Documents\DATA-ENGINEERING\movie_review.csv', 
+        src=os.path.join("C:", "Users", "shopinverse", "Documents", "DATA-ENGINEERING", "movie_review.csv"),
         dst='movies_reviews.csv',
         bucket='deb-bucket',
         mime_type='text/csv',
@@ -36,9 +37,9 @@ with DAG(
     # Define the task to upload log_reviews.csv to gcp bucket
     upload_log_reviews = LocalFilesystemToGCSOperator(
         task_id='upload_log_reviews',
-        src=r'C:\Users\shopinverse\Documents\DATA-ENGINEERING\log_reviews - log_reviews.csv', 
+        src=os.path.join("C:", "Users", "shopinverse", "Documents", "DATA-ENGINEERING", "log_reviews - log_reviews.csv"),
         dst='log_reviews.csv',
-        bucket='deb-bucket', 
+        bucket='deb-bucket',
         mime_type='text/csv',
         gcp_conn_id='gcp_conn_id',
     )
@@ -65,12 +66,12 @@ with DAG(
     # Define the task to upload user_purchase.csv to postgres database
     upload_user_purchase = PostgresOperator(
         task_id='upload_user_purchase',
-        postgres_conn_id='postgre_conn', 
+        postgres_conn_id='postgre_conn',
         sql="""
-            COPY deb_schema.user_purchase FROM E'C:\\Users\\shopinverse\\Documents\\DATA-ENGINEERING\\user_purchase - user_purchase.csv' DELIMITER ',' CSV HEADER;
+            COPY deb_schema.user_purchase FROM %s DELIMITER ',' CSV HEADER;
             """,
+        parameters=[os.path.join("C:", "Users", "shopinverse", "Documents", "DATA-ENGINEERING", "user_purchase - user_purchase.csv")],
     )
 
     # Define the dependencies between the tasks
     upload_movies_reviews >> upload_log_reviews >> create_schema_table >> upload_user_purchase
-
