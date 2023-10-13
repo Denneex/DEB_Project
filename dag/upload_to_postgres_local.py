@@ -67,7 +67,7 @@ with DAG(
         task_id='upload_user_purchase',
         postgres_conn_id='postgres_conn', 
         sql="""
-            COPY deb_schema.user_purchase FROM 'C:\\Users\\shopinverse\\Documents\\DATA-ENGINEERING\\user_purchase - user_purchase.csv' DELIMITER ',' CSV HEADER;
+            COPY deb_schema.user_purchase FROM E'C:\\Users\\shopinverse\\Documents\\DATA-ENGINEERING\\user_purchase - user_purchase.csv' DELIMITER ',' CSV HEADER;
             """,
     )
 
