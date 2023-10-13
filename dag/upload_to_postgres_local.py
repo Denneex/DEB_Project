@@ -1,4 +1,3 @@
-# Import the required modules
 import os
 from airflow import DAG
 from airflow.providers.google.cloud.transfers.local_to_gcs import LocalFilesystemToGCSOperator
@@ -24,7 +23,7 @@ with DAG(
     schedule_interval='@once',
 ) as dag:
 
-    # Define the task to upload movies_reviews.csv to gcp bucket
+    # task to upload movies_reviews.csv to gcp bucket
     upload_movies_reviews = LocalFilesystemToGCSOperator(
         task_id='upload_movies_reviews',
         src=os.path.join("C:", "Users", "shopinverse", "Documents", "DATA-ENGINEERING", "movie_review.csv"),
@@ -34,7 +33,7 @@ with DAG(
         gcp_conn_id='gcp_conn_id',
     )
 
-    # Define the task to upload log_reviews.csv to gcp bucket
+    # task to upload log_reviews.csv to gcp bucket
     upload_log_reviews = LocalFilesystemToGCSOperator(
         task_id='upload_log_reviews',
         src=os.path.join("C:", "Users", "shopinverse", "Documents", "DATA-ENGINEERING", "log_reviews.csv"),
@@ -44,7 +43,7 @@ with DAG(
         gcp_conn_id='gcp_conn_id',
     )
 
-    # Define the task to create schema and table in postgres database
+    # task to create schema and table in postgres database
     create_schema_table = PostgresOperator(
         task_id='create_schema_table',
         postgres_conn_id='postgre_conn',
@@ -63,7 +62,7 @@ with DAG(
             """,
     )
 
-    # Define the task to upload user_purchase.csv to postgres database
+    # task to upload user_purchase.csv to postgres database
     upload_user_purchase = PostgresOperator(
         task_id='upload_user_purchase',
         postgres_conn_id='postgre_conn',
@@ -73,5 +72,5 @@ with DAG(
         parameters=[os.path.join("C:", "Users", "shopinverse", "Documents", "DATA-ENGINEERING", "user_purchase.csv")],
     )
 
-    # Define the dependencies between the tasks
+    # dependencies between the tasks
     upload_movies_reviews >> upload_log_reviews >> create_schema_table >> upload_user_purchase
