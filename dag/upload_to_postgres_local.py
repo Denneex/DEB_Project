@@ -14,6 +14,7 @@ default_args = {
     #'email_on_retry': False,
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
+    'execution_timeout': timedelta(minutes=30),
 }
 
 # Define the dag
@@ -31,6 +32,7 @@ with DAG(
         bucket='deb-bucket',
         mime_type='text/csv',
         gcp_conn_id='gcp_conn_id',
+        execution_timeout=timedelta(hours=1),
     )
 
     # task to upload log_reviews.csv to gcp bucket
