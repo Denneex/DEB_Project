@@ -29,7 +29,7 @@ with DAG(
         src=r'C:\Users\shopinverse\Documents\DATA-ENGINEERING\movie_review.csv', 
         dst='movies_reviews.csv',
         bucket='deb_bucket',
-        mime_type='csv',
+        mime_type='text/csv',
         gcp_conn_id='google_cloud_default',
     )
 
@@ -67,7 +67,7 @@ with DAG(
         task_id='upload_user_purchase',
         postgres_conn_id='postgres_conn', 
         sql="""
-            COPY deb_schema.user_purchase FROM r'C:\Users\shopinverse\Documents\DATA-ENGINEERING\user_purchase - user_purchase.csv' DELIMITER ',' CSV HEADER;
+            COPY deb_schema.user_purchase FROM 'C:\\Users\\shopinverse\\Documents\\DATA-ENGINEERING\\user_purchase - user_purchase.csv' DELIMITER ',' CSV HEADER;
             """,
     )
 
