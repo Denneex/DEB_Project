@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2023, 10, 12),
+    'start_date': datetime(2023, 10, 13),
     #'email': ['airflow@example.com'],
     #'email_on_failure': False,
     #'email_on_retry': False,
@@ -28,7 +28,7 @@ with DAG(
         task_id='upload_movies_reviews',
         src=r'C:\Users\shopinverse\Documents\DATA-ENGINEERING\movie_review.csv', 
         dst='movies_reviews.csv',
-        bucket='deb_bucket',
+        bucket='deb-bucket',
         mime_type='text/csv',
         gcp_conn_id='gcp_conn_id',
     )
@@ -38,7 +38,7 @@ with DAG(
         task_id='upload_log_reviews',
         src=r'C:\Users\shopinverse\Documents\DATA-ENGINEERING\log_reviews - log_reviews.csv', 
         dst='log_reviews.csv',
-        bucket='deb_bucket', 
+        bucket='deb-bucket', 
         mime_type='text/csv',
         gcp_conn_id='gcp_conn_id',
     )
