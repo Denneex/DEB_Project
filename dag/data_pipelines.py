@@ -5,6 +5,7 @@ from airflow.providers.google.cloud.transfers.gcs_to_postgres import GCSToPostgr
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 from airflow.utils.dates import days_ago
+from datetime import datetime, timedelta
 
 # Define the default arguments for the DAG
 default_args = {
@@ -29,15 +30,15 @@ with DAG(
     # List the files in the RAW bucket
     list_raw_files = GCSListObjectsOperator(
         task_id='list_raw_files',
-        bucket='raw_bucket',
+        bucket='deb-bucket',
         prefix='data/'
     )
 
     # Load the user_purchase.csv file into PostgreSQL
     load_user_purchase = GCSToPostgresOperator(
         task_id='load_user_purchase',
-        postgres_conn_id='postgres_default',
-        bucket='raw_bucket',
+        postgres_conn_id='postgre_conn',
+        bucket='deb-bucket',
         object_name='data/user_purchase.csv',
         schema='user_purchase_schema',
         table='user_purchase',
@@ -45,7 +46,7 @@ with DAG(
         quotechar='"',
         skip_leading_rows=1,
         autocommit=True,
-        gcp_conn_id='google_cloud_default'
+        gcp_conn_id='gcp_conn_id'
     )
 
     # Delete the user_purchase.csv file from the RAW bucket
@@ -53,7 +54,7 @@ with DAG(
         task_id='delete_user_purchase',
         bucket_name='raw_bucket',
         objects=['data/user_purchase.csv'],
-        gcp_conn_id='google_cloud_default'
+        gcp_conn_id='gcp_conn_id'
     )
 
     # Submit the Spark job to transform the movie_review.csv file
@@ -61,7 +62,7 @@ with DAG(
         task_id='transform_movie_review',
         conn_id='spark_default',
         application='/path/to/spark_job.py', # The path to the Python script that contains the transformation logic for movie_review.csv
-        application_args=['raw_bucket', 'stage_bucket'], # The names of the input and output buckets as arguments
+        application_args=['deb-bucket', 'stage_bucket'], # The names of the input and output buckets as arguments
         name='transform_movie_review'
     )
 
@@ -77,7 +78,7 @@ with DAG(
     # Download the user_purchase table from PostgreSQL and store it in the STAGE bucket
     download_user_purchase = PostgresOperator(
         task_id='download_user_purchase',
-        postgres_conn_id='postgres_default',
+        postgres_conn_id='postgre_conn',
         sql="""
             COPY user_purchase_schema.user_purchase TO '/tmp/user_purchase.csv' DELIMITER ',' CSV HEADER;
             """,
@@ -86,10 +87,10 @@ with DAG(
 
     upload_user_purchase = GCSUploadObjectOperator(
         task_id='upload_user_purchase',
-        bucket_name='stage_bucket',
+        bucket_name='deb-bucket',
         object_name='data/user_purchase.csv',
         filename='/tmp/user_purchase.csv',
-        gcp_conn_id='google_cloud_default'
+        gcp_conn_id='gcp_conn_id'
     )
 
     # Define the dependencies between the tasks

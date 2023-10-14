@@ -5,6 +5,7 @@ from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQue
 from airflow.providers.google.cloud.transfers.bigquery_to_gcs import BigQueryToGCSOperator
 from airflow.providers.google.cloud.hooks.bigquery import BigQueryHook
 from airflow.utils.dates import days_ago
+from datetime import datetime, timedelta
 
 # Define the default arguments for the DAG
 default_args = {
@@ -29,14 +30,14 @@ with DAG(
     # List the files in the STAGE bucket
     list_stage_files = GCSListObjectsOperator(
         task_id='list_stage_files',
-        bucket='stage_bucket',
+        bucket='deb-bucket',
         prefix='data/'
     )
 
     # Load the user_purchase.csv file into BigQuery
     load_user_purchase = GCSToBigQueryOperator(
         task_id='load_user_purchase',
-        bucket='stage_bucket',
+        bucket='deb-bucket',
         source_objects=['data/user_purchase.csv'],
         destination_project_dataset_table='user_purchase_schema.user_purchase',
         schema_fields=[
@@ -52,13 +53,13 @@ with DAG(
         write_disposition='WRITE_TRUNCATE',
         autodetect=False,
         skip_leading_rows=1,
-        gcp_conn_id='google_cloud_default'
+        gcp_conn_id='gcp_conn_id'
     )
 
     # Load the movie_review.csv file into BigQuery
     load_movie_review = GCSToBigQueryOperator(
         task_id='load_movie_review',
-        bucket='stage_bucket',
+        bucket='deb-bucket',
         source_objects=['data/movie_review.csv'],
         destination_project_dataset_table='user_purchase_schema.movie_review',
         schema_fields=[
@@ -69,13 +70,13 @@ with DAG(
         write_disposition='WRITE_TRUNCATE',
         autodetect=False,
         skip_leading_rows=1,
-        gcp_conn_id='google_cloud_default'
+        gcp_conn_id='gcp_conn_id'
     )
 
     # Load the log_reviews.csv file into BigQuery
     load_log_reviews = GCSToBigQueryOperator(
         task_id='load_log_reviews',
-        bucket='stage_bucket',
+        bucket='deb-bucket',
         source_objects=['data/log_reviews.csv'],
         destination_project_dataset_table='user_purchase_schema.log_reviews',
         schema_fields=[
@@ -91,7 +92,7 @@ with DAG(
         write_disposition='WRITE_TRUNCATE',
         autodetect=False,
         skip_leading_rows=1,
-        gcp_conn_id='google_cloud_default'
+        gcp_conn_id='gcp_conn_id'
     )
 
     # Create the dim_date table in BigQuery
@@ -114,7 +115,7 @@ with DAG(
             FROM user_purchase_schema.log_reviews;
             """,
         use_legacy_sql=False,
-        gcp_conn_id='google_cloud_default',
+        gcp_conn_id='gcp_conn_id',
         bigquery_conn_id='bigquery_default'
     )
 
@@ -129,7 +130,7 @@ with DAG(
             FROM user_purchase_schema.log_reviews;
             """,
         use_legacy_sql=False,
-        gcp_conn_id='google_cloud_default',
+        gcp_conn_id='gcp_conn_id',
         bigquery_conn_id='bigquery_default'
     )
 
@@ -144,7 +145,7 @@ with DAG(
             FROM user_purchase_schema.log_reviews;
             """,
         use_legacy_sql=False,
-        gcp_conn_id='google_cloud_default',
+        gcp_conn_id='gcp_conn_id',
         bigquery_conn_id='bigquery_default'
     )
 
@@ -159,7 +160,7 @@ with DAG(
             FROM user_purchase_schema.log_reviews;
             """,
         use_legacy_sql=False,
-        gcp_conn_id='google_cloud_default',
+        gcp_conn_id='gcp_conn_id',
         bigquery_conn_id='bigquery_default'
     )
 
@@ -174,7 +175,7 @@ with DAG(
             FROM user_purchase_schema.log_reviews;
             """,
         use_legacy_sql=False,
-        gcp_conn_id='google_cloud_default',
+        gcp_conn_id='gcp_conn_id',
         bigquery_conn_id='bigquery_default'
     )
 
@@ -204,7 +205,7 @@ with DAG(
             GROUP BY customerid, id_dim_devices, id_dim_location, id_dim_os, id_dim_browser;
             """,
         use_legacy_sql=False,
-        gcp_conn_id='google_cloud_default',
+        gcp_conn_id='gcp_conn_id',
         bigquery_conn_id='bigquery_default'
     )
 
@@ -215,7 +216,7 @@ with DAG(
         destination_cloud_storage_uris=['gs://dw_bucket/data/fact_movie_analytics.csv'],
         export_format='CSV',
         print_header=True,
-        gcp_conn_id='google_cloud_default',
+        gcp_conn_id='gcp_conn_id',
         bigquery_conn_id='bigquery_default'
     )
 
