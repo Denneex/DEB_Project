@@ -12,9 +12,9 @@ default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
     'start_date': days_ago(1),
-    'email': ['airflow@example.com'],
-    'email_on_failure': False,
-    'email_on_retry': False,
+    #'email': ['airflow@example.com'],
+    #'email_on_failure': False,
+    #'email_on_retry': False,
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
 }
@@ -116,7 +116,7 @@ with DAG(
             """,
         use_legacy_sql=False,
         gcp_conn_id='gcp_conn_id',
-        bigquery_conn_id='bigquery_default'
+        bigquery_conn_id='bigqueri_conn_id'
     )
 
     # Create the dim_devices table in BigQuery
@@ -131,7 +131,7 @@ with DAG(
             """,
         use_legacy_sql=False,
         gcp_conn_id='gcp_conn_id',
-        bigquery_conn_id='bigquery_default'
+        bigquery_conn_id='bigqueri_conn_id'
     )
 
     # Create the dim_location table in BigQuery
@@ -146,7 +146,7 @@ with DAG(
             """,
         use_legacy_sql=False,
         gcp_conn_id='gcp_conn_id',
-        bigquery_conn_id='bigquery_default'
+        bigquery_conn_id='bigqueri_conn_id'
     )
 
     # Create the dim_os table in BigQuery
@@ -161,7 +161,7 @@ with DAG(
             """,
         use_legacy_sql=False,
         gcp_conn_id='gcp_conn_id',
-        bigquery_conn_id='bigquery_default'
+        bigquery_conn_id='bigqueri_conn_id'
     )
 
     # Create the dim_browser table in BigQuery
@@ -176,7 +176,7 @@ with DAG(
             """,
         use_legacy_sql=False,
         gcp_conn_id='gcp_conn_id',
-        bigquery_conn_id='bigquery_default'
+        bigquery_conn_id='bigqueri_conn_id'
     )
 
     # Create the fact_movie_analytics table in BigQuery
@@ -206,7 +206,7 @@ with DAG(
             """,
         use_legacy_sql=False,
         gcp_conn_id='gcp_conn_id',
-        bigquery_conn_id='bigquery_default'
+        bigquery_conn_id='bigqueri_conn_id'
     )
 
     # Export the fact_movie_analytics table to the DW bucket as a CSV file
@@ -217,7 +217,7 @@ with DAG(
         export_format='CSV',
         print_header=True,
         gcp_conn_id='gcp_conn_id',
-        bigquery_conn_id='bigquery_default'
+        bigquery_conn_id='bigqueri_conn_id'
     )
 
     # Define the dependencies between the tasks

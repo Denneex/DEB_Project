@@ -12,9 +12,9 @@ default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
     'start_date': days_ago(1),
-    'email': ['airflow@example.com'],
-    'email_on_failure': False,
-    'email_on_retry': False,
+    #'email': ['airflow@example.com'],
+    #'email_on_failure': False,
+    #'email_on_retry': False,
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
 }
@@ -52,7 +52,7 @@ with DAG(
     # Delete the user_purchase.csv file from the RAW bucket
     delete_user_purchase = GCSDeleteObjectsOperator(
         task_id='delete_user_purchase',
-        bucket_name='raw_bucket',
+        bucket_name='deb-bucket',
         objects=['data/user_purchase.csv'],
         gcp_conn_id='gcp_conn_id'
     )
@@ -61,7 +61,7 @@ with DAG(
     transform_movie_review = SparkSubmitOperator(
         task_id='transform_movie_review',
         conn_id='spark_default',
-        application='/path/to/spark_job.py', # The path to the Python script that contains the transformation logic for movie_review.csv
+        application='deb-bucket/path/spark_transform_data.py', # The path to the Python script that contains the transformation logic for movie_review.csv
         application_args=['deb-bucket', 'stage_bucket'], # The names of the input and output buckets as arguments
         name='transform_movie_review'
     )
@@ -70,8 +70,8 @@ with DAG(
     transform_log_reviews = SparkSubmitOperator(
         task_id='transform_log_reviews',
         conn_id='spark_default',
-        application='/path/to/spark_job.py', # The path to the Python script that contains the transformation logic for log_reviews.csv
-        application_args=['raw_bucket', 'stage_bucket'], # The names of the input and output buckets as arguments
+        application='deb-bucket/path/spark_transform_data.py', # The path to the Python script that contains the transformation logic for log_reviews.csv
+        application_args=['deb-bucket', 'stage_bucket'], # The names of the input and output buckets as arguments
         name='transform_log_reviews'
     )
 
@@ -89,7 +89,7 @@ with DAG(
         task_id='upload_user_purchase',
         bucket_name='deb-bucket',
         object_name='data/user_purchase.csv',
-        filename='/tmp/user_purchase.csv',
+        filename='/data/user_purchase.csv',
         gcp_conn_id='gcp_conn_id'
     )
 
