@@ -19,7 +19,7 @@ CLOUD_PROVIDER = "gcp"
 # GCP constants
 GCP_CONN_ID = "gcp_conn_id"
 GCS_BUCKET_NAME = "deb-bucket"
-GCS_KEY_NAME = "user_purchase - user_purchase.csv"
+GCS_KEY_NAME = "user_purchase.csv"
 
 # Postgres constants
 POSTGRES_CONN_ID = "postgre_conn"
