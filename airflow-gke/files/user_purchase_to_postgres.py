@@ -1,10 +1,7 @@
 # Import the required modules
-#from airflow import DAG
-
 from airflow.models import DAG
 from airflow.operators.dummy import DummyOperator
 from airflow.operators.python import PythonOperator
-from airflow.operators.sql import BranchSQLOperator
 from airflow.providers.google.cloud.hooks.gcs import GCSHook
 from airflow.providers.google.cloud.sensors.gcs import GCSObjectExistenceSensor
 from airflow.providers.postgres.hooks.postgres import PostgresHook
@@ -12,8 +9,6 @@ from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.utils.dates import days_ago
 from airflow.utils.trigger_rule import TriggerRule
 import os
-from airflow.providers.google.cloud.transfers.local_to_gcs import LocalFilesystemToGCSOperator
-from airflow.providers.postgres.operators.postgres import PostgresOperator
 from datetime import datetime, timedelta
 
 # General constants
@@ -97,38 +92,21 @@ with DAG(
         postgres_conn_id=POSTGRES_CONN_ID,
         sql=f"DELETE FROM deb_schema.{POSTGRES_TABLE_NAME}",
     )
-    continue_process = DummyOperator(task_id="continue_process")
-
-    # Define the task to upload user_purchase.csv to gcp bucket
-    upload_user_purchase = LocalFilesystemToGCSOperator(
-        task_id='upload_user_purchase',
-        src=r'C:\Users\shopinverse\Documents\DATA-ENGINEERING\user_purchase - user_purchase.csv', 
-        dst='user_purchase - user_purchase.csv',
-        bucket='deb-bucket',
-        mime_type='text/csv',
-        gcp_conn_id='gcp_conn_id',
-    )
-
+    
     ingest_data = PythonOperator(
         task_id="ingest_data",
         python_callable=ingest_data_from_gcs,
         op_kwargs={
-            "gcp_conn_id": GCP_CONN_ID,
-            "postgres_conn_id": POSTGRES_CONN_ID,
             "gcs_bucket": GCS_BUCKET_NAME,
             "gcs_object": GCS_KEY_NAME,
-            "postgres_table": f"deb_schema.{POSTGRES_TABLE_NAME}",
+            "postgres_table": POSTGRES_TABLE_NAME,
+            "gcp_conn_id": GCP_CONN_ID,
+            "postgres_conn_id": POSTGRES_CONN_ID,
         },
-        trigger_rule=TriggerRule.ONE_SUCCESS,
     )
 
-    validate_data = BranchSQLOperator(
-        task_id="validate_data",
-        conn_id=POSTGRES_CONN_ID,
-        sql=f"SELECT COUNT(*) AS total_rows FROM deb_schema.{POSTGRES_TABLE_NAME}",
-        follow_task_ids_if_false=[continue_process.task_id],
-        follow_task_ids_if_true=[clear_table.task_id],
-    )
+    end_workflow = DummyOperator(task_id="end_workflow")
 
-# Define the dependencies between the tasks
-start_workflow >> verify_key_existence >> create_table_entity >> upload_user_purchase >> ingest_data >> validate_data >> [clear_table, continue_process]
+# Define the workflow dependencies
+start_workflow >> verify_key_existence >> create_table_entity >> clear_table >> ingest_data >> end_workflow
+
