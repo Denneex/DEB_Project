@@ -1,4 +1,4 @@
-# Import the required modules
+
 from airflow.models import DAG
 from airflow.operators.dummy import DummyOperator
 from airflow.operators.python import PythonOperator
